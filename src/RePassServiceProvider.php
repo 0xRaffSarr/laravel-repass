@@ -9,17 +9,25 @@ class RePassServiceProvider extends ServiceProvider
         $this->registerRePass();
     }
 
+    /**
+     * @return void
+     *
+     * @author Raffaele Sarracino
+     * @version 1.0.0
+     */
     protected function registerRePass()
     {
-        $this->app->singleton('auth.password', function ($app) {
-            return new RePassBrokerManager($app);
+        $this->app->singleton(RePassManager::class, function ($app) {
+            return new RePassManager($app);
         });
 
-        $this->app->bind('auth.password.broker', function ($app) {
-           return $app->make('auth.password')->broker();
+        $this->app->extend('auth.password', function ($original, $app) {
+            return new RePassBrokerManager($app, $app->make(RePassManager::class));
         });
 
-
+        $this->app->extend('auth.password.broker', function ($original, $app) {
+            return $app->make('auth.password')->broker();
+        });
     }
 
     public function provides() {

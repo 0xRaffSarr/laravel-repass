@@ -4,7 +4,7 @@ namespace Xraffsarr\LaravelRePass;
 
 use Closure;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
-use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
+use InvalidArgumentException;
 
 class RePassBrokerManager extends PasswordBrokerManager
 {
@@ -15,6 +15,25 @@ class RePassBrokerManager extends PasswordBrokerManager
     {
         parent::__construct($app);
         $this->manager = $manager;
+    }
+
+    /**
+     * @param $name
+     * @return \Xraffsarr\LaravelRePass\RePassBroker
+     */
+    protected function resolve($name)
+    {
+        $config = $this->getConfig($name);
+
+        if (is_null($config)) {
+            throw new InvalidArgumentException("Password resetter [{$name}] is not defined.");
+        }
+
+        return new RePassBroker(
+            $this->createTokenRepository($config),
+            $this->app['auth']->createUserProvider($config['provider'] ?? null),
+            $this->app['events'] ?? null,
+        );
     }
 
     /**
@@ -49,20 +68,5 @@ class RePassBrokerManager extends PasswordBrokerManager
         );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function sendResetLink(array $credentials, ?Closure $callback = null)
-    {
-        // TODO: Implement sendResetLink() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function reset(array $credentials, Closure $callback)
-    {
-        // TODO: Implement reset() method.
-    }
 
 }
