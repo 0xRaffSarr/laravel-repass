@@ -1,0 +1,31 @@
+{
+    "name": "xraffsarr/laravel-re-pass",
+    "description": "A custom password reset for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "version": "0.0.1",
+    "autoload": {
+        "psr-4": {
+            "Xraffsarr\\LaravelRePass\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "role": "developer",
+            "name": "Raffaele Sarracino",
+            "email": "work@raffaelesarracino.it",
+            "homepage": "https://raffaelesarracino.it"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/auth": "^11.34",
+        "illuminate/support": "^9.21|^10.0|^11.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
