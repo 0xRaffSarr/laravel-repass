@@ -26,13 +26,13 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
                 "Xraffsarr\\LaravelRePass\\RePassServiceProvider"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
