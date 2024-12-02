@@ -4,9 +4,19 @@ namespace Xraffsarr\LaravelRePass;
 
 use Closure;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
+use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
 
 class RePassBrokerManager extends PasswordBrokerManager
 {
+
+    protected RePassManager $manager;
+
+    public function __construct($app, RePassManager $manager)
+    {
+        parent::__construct($app);
+        $this->manager = $manager;
+    }
+
     /**
      * @inheritDoc
      */
@@ -33,6 +43,7 @@ class RePassBrokerManager extends PasswordBrokerManager
             $this->app['hash'],
             $config['table'],
             $key,
+            $this->manager,
             $config['expire'],
             $config['throttle'] ?? 0
         );
@@ -53,4 +64,5 @@ class RePassBrokerManager extends PasswordBrokerManager
     {
         // TODO: Implement reset() method.
     }
+
 }

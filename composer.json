@@ -1,5 +1,5 @@
 {
-    "name": "xraffsarr/laravel-re-pass",
+    "name": "xraffsarr/laravel-repass",
     "description": "A custom password reset for Laravel",
     "type": "library",
     "license": "MIT",

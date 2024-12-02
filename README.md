@@ -1,1 +1,1 @@
-# laravel-password-reset
+# laravel-repass

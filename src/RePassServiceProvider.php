@@ -5,7 +5,7 @@ use Illuminate\Support\ServiceProvider;
 
 class RePassServiceProvider extends ServiceProvider
 {
-    public function boot() {
+    public function register() {
         $this->registerRePass();
     }
 
@@ -18,6 +18,8 @@ class RePassServiceProvider extends ServiceProvider
         $this->app->bind('auth.password.broker', function ($app) {
            return $app->make('auth.password')->broker();
         });
+
+
     }
 
     public function provides() {
