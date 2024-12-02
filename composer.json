@@ -3,6 +3,7 @@
     "description": "A custom password reset for Laravel",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/0xRaffSarr/laravel-repass",
     "version": "0.0.1",
     "autoload": {
         "psr-4": {
