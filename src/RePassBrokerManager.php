@@ -3,6 +3,7 @@
 namespace Xraffsarr\LaravelRePass;
 
 use Closure;
+use http\Exception\BadMethodCallException;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use InvalidArgumentException;
 
@@ -68,5 +69,27 @@ class RePassBrokerManager extends PasswordBrokerManager
         );
     }
 
+    /**
+     * @param $method
+     * @param $parameters
+     * @return mixed
+     *
+     * @author Raffaele Sarracino
+     * @version 1.0.0
+     */
+    public function __call($method, $parameters)
+    {
+        $broker = $this->broker();
+        $rePassManager = $this->manager;
 
+        if(method_exists($rePassManager, $method)) {
+            return $rePassManager->{$method}(...$parameters);
+        }
+        else if (method_exists($broker, $method)) {
+            return $broker->{$method}(...$parameters);
+        }
+
+        // Puoi lanciare un'eccezione o gestire il caso in cui il metodo non esiste
+        throw new BadMethodCallException("Method {$method} does not exist on " . get_class($broker));
+    }
 }
