@@ -17,13 +17,13 @@ class RePassManager
 
 
     /**
-     * @param $handler
+     * @param RePassTokenHandler|string $handler
      * @return void
      *
      * @author Raffaele Sarracino
      * @version 1.0.0
      */
-    public function useTokenHandler($handler): void
+    public function useTokenHandler(RePassTokenHandler|string $handler): void
     {
         if(is_string($handler) && in_array(RePassTokenHandler::class, class_implements($handler))) {
             $this->tokenHandler = new $handler();
