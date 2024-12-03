@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/0xRaffSarr/laravel-repass",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "autoload": {
         "psr-4": {
             "Xraffsarr\\LaravelRePass\\": "src/"
@@ -31,7 +31,10 @@
         "laravel": {
             "providers": [
                 "Xraffsarr\\LaravelRePass\\RePassServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "RePass": "Xraffsarr\\LaravelRePass\\Facade\\RePass"
+            }
         }
     },
     "minimum-stability": "dev",
