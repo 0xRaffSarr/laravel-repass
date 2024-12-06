@@ -15,7 +15,7 @@ class RePassDatabaseTokenHandler implements RePassTokenHandler
         return ['email' => $email, 'token' => $hasher->make($token), 'created_at' => new Carbon];
     }
 
-    public function tokenExists(CanResetPassword $user, #[\SensitiveParameter] string $token, #[\SensitiveParameter] $record): bool {
+    public function tokenExists(CanResetPassword $user, #[\SensitiveParameter] $token, #[\SensitiveParameter] $record): bool {
         $hasher = app('hash');
         return $hasher->check($token, $record['token']);
     }
