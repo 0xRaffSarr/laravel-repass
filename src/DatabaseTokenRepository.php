@@ -3,9 +3,9 @@
 namespace Xraffsarr\LaravelRePass;
 
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseRepository;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Database\ConnectionInterface;
-use Illuminate\Support\Carbon;
 
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
@@ -27,6 +27,17 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
     protected function getPayload($email, #[\SensitiveParameter] $token)
     {
         return $this->manager->getTokenHandler()->tokenPayload($email, $token);
+    }
+
+    public function exists(CanResetPasswordContract $user, #[\SensitiveParameter] $token)
+    {
+        $record = (array) $this->getTable()->where(
+            'email', $user->getEmailForPasswordReset()
+        )->first();
+
+        return $record &&
+            ! $this->tokenExpired($record['created_at']) &&
+            $this->manager->getTokenHandler()->tokenExists($user, $token, $record);
     }
 
 }
