@@ -6,7 +6,6 @@ use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseRepository;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Database\ConnectionInterface;
-
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
     protected RePassManager $manager;
@@ -27,6 +26,11 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
     protected function getPayload($email, #[\SensitiveParameter] $token)
     {
         return $this->manager->getTokenHandler()->tokenPayload($email, $token);
+    }
+
+    public function createNewToken()
+    {
+        return $this->manager->getTokenHandler()->createToken($this->hashKey);
     }
 
     public function exists(CanResetPasswordContract $user, #[\SensitiveParameter] $token)
