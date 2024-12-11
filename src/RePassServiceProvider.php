@@ -4,7 +4,7 @@ namespace Xraffsarr\LaravelRePass;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class RePassServiceProvider extends ServiceProvider implements DeferrableProvider
+class RePassServiceProvider extends ServiceProvider
 {
     public function register() {
         $this->registerRePass();
@@ -29,7 +29,7 @@ class RePassServiceProvider extends ServiceProvider implements DeferrableProvide
         }
         else {
             $this->app->singleton('auth.password', function ($app) {
-                return new RePassBrokerManager($app, $app->male(RePassManager::class));
+                return new RePassBrokerManager($app, $app->make(RePassManager::class));
             });
         }
 
