@@ -1,9 +1,10 @@
 <?php
 namespace Xraffsarr\LaravelRePass;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class RePassServiceProvider extends ServiceProvider
+class RePassServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function register() {
         $this->registerRePass();
