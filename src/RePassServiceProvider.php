@@ -21,13 +21,27 @@ class RePassServiceProvider extends ServiceProvider
             return new RePassManager($app);
         });
 
-        $this->app->extend('auth.password', function ($original, $app) {
-            return new RePassBrokerManager($app, $app->make(RePassManager::class));
-        });
+        if($this->app->has('auth.password')) {
+            $this->app->extend('auth.password', function ($original, $app) {
+                return new RePassBrokerManager($app, $app->make(RePassManager::class));
+            });
+        }
+        else {
+            $this->app->singleton('auth.password', function ($app) {
+                return new RePassBrokerManager($app, $app->male(RePassManager::class));
+            });
+        }
 
-        $this->app->extend('auth.password.broker', function ($original, $app) {
-            return $app->make('auth.password')->broker();
-        });
+        if($this->app->has('auth.password.broker')) {
+            $this->app->extend('auth.password.broker', function ($original, $app) {
+                return $app->make('auth.password')->broker();
+            });
+        }
+        else {
+            $this->app->singleton('auth.password.broker', function ($app) {
+                return $app->make('auth.password')->broker();
+            });
+        }
     }
 
     public function provides() {
