@@ -2,6 +2,7 @@
 namespace Xraffsarr\LaravelRePass;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class RePassServiceProvider extends ServiceProvider
