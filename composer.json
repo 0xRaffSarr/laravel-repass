@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/0xRaffSarr/laravel-repass",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "autoload": {
         "psr-4": {
             "Xraffsarr\\LaravelRePass\\": "src/"
@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/auth": "^11.34",
+      "illuminate/auth": "^11.34|^12.0",
         "illuminate/support": "^9.21|^10.0|^11.0"
     },
     "config": {
