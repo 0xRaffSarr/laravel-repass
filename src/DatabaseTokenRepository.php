@@ -16,7 +16,7 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
         $table,
         $hashKey,
         RePassManager $manager,
-        $expires = 60,
+        $expires = 3600,
         $throttle = 60,
     ) {
         parent::__construct($connection, $hasher, $table, $hashKey, $expires, $throttle);

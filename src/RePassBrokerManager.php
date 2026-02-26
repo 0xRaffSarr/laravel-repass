@@ -27,7 +27,7 @@ class RePassBrokerManager extends PasswordBrokerManager
         $config = $this->getConfig($name);
 
         if (is_null($config)) {
-            throw new InvalidArgumentException("Password resetter [{$name}] is not defined.");
+            throw new InvalidArgumentException("The password reset handler '{$name}' is not defined.");
         }
 
         return new RePassBroker(
@@ -64,7 +64,7 @@ class RePassBrokerManager extends PasswordBrokerManager
             $config['table'],
             $key,
             $this->manager,
-            $config['expire'],
+            ($config['expire'] ?? 60) * 60,
             $config['throttle'] ?? 0
         );
     }
