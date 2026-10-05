@@ -11,10 +11,12 @@ use Xraffsarr\LaravelRePass\Handler\RePassDatabaseTokenHandler;
  */
 class RePassManager
 {
+    /** The handler used by every repository: swapped at runtime, so repositories read it lazily. */
     protected RePassTokenHandler $tokenHandler;
 
     public function __construct(protected $app)
     {
+        // Default behaviour is the framework one until the application registers its own handler.
         $this->tokenHandler = new RePassDatabaseTokenHandler();
     }
 

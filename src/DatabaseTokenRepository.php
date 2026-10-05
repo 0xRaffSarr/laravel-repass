@@ -14,6 +14,10 @@ use Xraffsarr\LaravelRePass\Contracts\HandlesTokenExpiration;
  */
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
+    /**
+     * @param  int  $expires  seconds a token stays valid (default for handlers without their own rule)
+     * @param  int  $throttle  seconds before a new token can be requested for the same user
+     */
     public function __construct(
         ConnectionInterface $connection,
         HasherContract $hasher,
@@ -48,6 +52,7 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
      */
     public function exists(CanResetPasswordContract $user, #[\SensitiveParameter] $token)
     {
+        // A missing row casts to an empty array, which is falsy below.
         $record = (array) $this->getTable()->where(
             'email', $user->getEmailForPasswordReset()
         )->first();
@@ -64,5 +69,4 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
 
         return ! $expired && $handler->tokenExists($user, $token, $record);
     }
-
 }

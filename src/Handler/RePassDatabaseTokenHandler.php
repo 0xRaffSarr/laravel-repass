@@ -13,16 +13,19 @@ class RePassDatabaseTokenHandler implements RePassTokenHandler
 {
     public function createToken(string $hashKey): string
     {
+        // 64 hex chars: random value signed with the app key, as the framework does.
         return hash_hmac('sha256', Str::random(40), $hashKey);
     }
 
     public function tokenPayload($email, #[\SensitiveParameter] $token): array
     {
+        // Only the hash is stored: the plain token is shown to the user once, in the notification.
         return ['email' => $email, 'token' => app('hash')->make($token), 'created_at' => now()];
     }
 
     public function tokenExists(CanResetPassword $user, #[\SensitiveParameter] $token, #[\SensitiveParameter] array $record): bool
     {
+        // Timing-safe comparison against the stored hash.
         return app('hash')->check($token, $record['token']);
     }
 }
