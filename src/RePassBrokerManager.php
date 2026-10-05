@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass;
 
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
@@ -47,8 +49,8 @@ class RePassBrokerManager extends PasswordBrokerManager
             $key,
             $this->manager,
             // "expire" is in minutes in the config, the repository wants seconds.
-            ($config['expire'] ?? 60) * 60,
-            $config['throttle'] ?? 0,
+            (int) ($config['expire'] ?? 60) * 60,
+            (int) ($config['throttle'] ?? 0),
         );
     }
 

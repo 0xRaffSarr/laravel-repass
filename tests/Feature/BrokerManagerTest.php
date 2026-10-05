@@ -28,6 +28,14 @@ class BrokerManagerTest extends TestCase
         $this->assertSame(90, $this->repositoryProperty('throttle'));
     }
 
+    public function test_string_config_values_from_the_environment_are_accepted(): void
+    {
+        config(['auth.passwords.users.expire' => '5', 'auth.passwords.users.throttle' => '90']);
+
+        $this->assertSame(5 * 60, $this->repositoryProperty('expires'));
+        $this->assertSame(90, $this->repositoryProperty('throttle'));
+    }
+
     public function test_base64_app_key_is_decoded_for_the_hash_key(): void
     {
         $this->assertSame(str_repeat('k', 32), $this->repositoryProperty('hashKey'));

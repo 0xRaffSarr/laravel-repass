@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass;
 
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseRepository;
