@@ -45,3 +45,7 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit
+
+      - name: Static analysis
+        if: matrix.stability == 'prefer-stable'
+        run: composer analyse

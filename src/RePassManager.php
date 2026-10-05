@@ -23,7 +23,7 @@ class RePassManager
     }
 
     /**
-     * @param  RePassTokenHandler|class-string<RePassTokenHandler>  $handler  class names are resolved from the container
+     * @param  RePassTokenHandler|string  $handler  a handler, or the name of a handler class (resolved from the container)
      *
      * @throws InvalidArgumentException when the handler does not implement RePassTokenHandler
      */

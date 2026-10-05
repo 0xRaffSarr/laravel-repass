@@ -40,6 +40,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
+        "larastan/larastan": "^3.12",
         "laravel/passport": "^13.8",
         "orchestra/testbench": "^10.0|^11.0"
     },
@@ -49,6 +50,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=1G"
     }
 }
