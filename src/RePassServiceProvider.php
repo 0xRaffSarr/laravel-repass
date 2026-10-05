@@ -1,52 +1,35 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
-class RePassServiceProvider extends ServiceProvider
+/**
+ * Deferred, like the framework's PasswordResetServiceProvider: both providers claim the same
+ * services and the one loaded later wins, so the override does not depend on registration order.
+ */
+class RePassServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    public function register() {
-        $this->registerRePass();
+    public function register(): void
+    {
+        // One handler for the whole application.
+        $this->app->singleton(RePassManager::class, fn ($app) => new RePassManager($app));
+
+        // Replaces the framework's broker manager (same service id, so Password and RePass facades both use it).
+        $this->app->singleton('auth.password', fn ($app) => new RePassBrokerManager($app, $app->make(RePassManager::class)));
+
+        // Same binding as the framework: the default broker of the manager above.
+        $this->app->bind('auth.password.broker', fn ($app) => $app->make('auth.password')->broker());
     }
 
     /**
-     * @return void
-     *
-     * @author Raffaele Sarracino
-     * @version 1.0.0
+     * @return array<int, string>
      */
-    protected function registerRePass()
+    public function provides(): array
     {
-        $this->app->singleton(RePassManager::class, function ($app) {
-            return new RePassManager($app);
-        });
-
-        if($this->app->has('auth.password')) {
-            $this->app->extend('auth.password', function ($original, $app) {
-                return new RePassBrokerManager($app, $app->make(RePassManager::class));
-            });
-        }
-        else {
-            $this->app->singleton('auth.password', function ($app) {
-                return new RePassBrokerManager($app, $app->make(RePassManager::class));
-            });
-        }
-
-        if($this->app->has('auth.password.broker')) {
-            $this->app->extend('auth.password.broker', function ($original, $app) {
-                return $app->make('auth.password')->broker();
-            });
-        }
-        else {
-            $this->app->singleton('auth.password.broker', function ($app) {
-                return $app->make('auth.password')->broker();
-            });
-        }
-    }
-
-    public function provides() {
-        return ['auth.password', 'auth.password.broker'];
+        return [RePassManager::class, 'auth.password', 'auth.password.broker'];
     }
 }

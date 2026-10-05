@@ -1,61 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass;
 
-use Closure;
-use http\Exception\BadMethodCallException;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use InvalidArgumentException;
 
+/**
+ * Only the token repository is replaced: broker creation (user provider, events, timebox)
+ * stays inherited from the framework, so framework changes there come for free.
+ */
 class RePassBrokerManager extends PasswordBrokerManager
 {
-
-    protected RePassManager $manager;
-
-    public function __construct($app, RePassManager $manager)
+    /**
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  RePassManager  $manager  supplies the active token handler to the repositories
+     */
+    public function __construct($app, protected RePassManager $manager)
     {
         parent::__construct($app);
-        $this->manager = $manager;
     }
 
     /**
-     * @param $name
-     * @return \Xraffsarr\LaravelRePass\RePassBroker
+     * Build the repository for a broker config (auth.passwords.*). Mirrors the framework method,
+     * but returns the handler-aware database repository.
+     *
+     * @throws InvalidArgumentException when the config asks for the cache driver
      */
-    protected function resolve($name)
+    protected function createTokenRepository(array $config)
     {
-        $config = $this->getConfig($name);
-
-        if (is_null($config)) {
-            throw new InvalidArgumentException("The password reset handler '{$name}' is not defined.");
+        // The cache repository stores hashed tokens itself and cannot delegate to a handler.
+        if (($config['driver'] ?? null) === 'cache') {
+            throw new InvalidArgumentException('The RePass token handler does not support the "cache" driver.');
         }
 
-        return new RePassBroker(
-            $this->createTokenRepository($config),
-            $this->app['auth']->createUserProvider($config['provider'] ?? null),
-            $this->app['events'] ?? null,
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function createTokenRepository(array $config) {
+        // Same key derivation as the framework: the HMAC key is the decoded app key.
         $key = $this->app['config']['app.key'];
 
-        if(str_starts_with($key, 'base64:')) {
+        if (str_starts_with($key, 'base64:')) {
             $key = base64_decode(substr($key, 7));
-        }
-
-        if(isset($config['driver']) && $config['driver'] == 'cache') {
-            return new CacheTokenRepository(
-                $this->app['cache']->store($config['store'] ?? null),
-                $this->app['hash'],
-                $key,
-                ($config['expire'] ?? 60) * 60,
-                $config['throttle'] ?? 0,
-                $config['prefix'] ?? '',
-            );
         }
 
         return new DatabaseTokenRepository(
@@ -64,32 +48,22 @@ class RePassBrokerManager extends PasswordBrokerManager
             $config['table'],
             $key,
             $this->manager,
-            ($config['expire'] ?? 60) * 60,
-            $config['throttle'] ?? 0
+            // "expire" is in minutes in the config, the repository wants seconds.
+            (int) ($config['expire'] ?? 60) * 60,
+            (int) ($config['throttle'] ?? 0),
         );
     }
 
     /**
-     * @param $method
-     * @param $parameters
-     * @return mixed
-     *
-     * @author Raffaele Sarracino
-     * @version 1.0.0
+     * RePassManager methods (useTokenHandler, getTokenHandler) first, then the default broker,
+     * so the facade exposes both. Unknown methods fail as they do on the framework manager.
      */
     public function __call($method, $parameters)
     {
-        $broker = $this->broker();
-        $rePassManager = $this->manager;
-
-        if(method_exists($rePassManager, $method)) {
-            return $rePassManager->{$method}(...$parameters);
-        }
-        else if (method_exists($broker, $method)) {
-            return $broker->{$method}(...$parameters);
+        if (method_exists($this->manager, $method)) {
+            return $this->manager->{$method}(...$parameters);
         }
 
-        // Puoi lanciare un'eccezione o gestire il caso in cui il metodo non esiste
-        throw new BadMethodCallException("Method {$method} does not exist on " . get_class($broker));
+        return parent::__call($method, $parameters);
     }
 }

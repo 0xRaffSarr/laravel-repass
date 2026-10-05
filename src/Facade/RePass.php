@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass\Facade;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \Xraffsarr\LaravelRePass\RePassBroker broker(string|null $name = null)
+ * Drop-in replacement for the Password facade, plus useTokenHandler() / getTokenHandler().
+ *
+ * @method static \Illuminate\Contracts\Auth\PasswordBroker broker(string|null $name = null)
  * @method static string getDefaultDriver()
  * @method static void setDefaultDriver(string $name)
  * @method static string sendResetLink(array $credentials, \Closure|null $callback = null)
@@ -19,7 +23,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler getTokenHandler()
  *
  * @see \Xraffsarr\LaravelRePass\RePassBrokerManager
- * @see \Xraffsarr\LaravelRePass\RePassBroker
  * @see \Xraffsarr\LaravelRePass\RePassManager
  */
 class RePass extends Facade

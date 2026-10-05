@@ -1,27 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Xraffsarr\LaravelRePass\Handler;
 
 use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
 
+/**
+ * Default handler: mirrors the framework behaviour (hashed random token, no extra secrets).
+ */
 class RePassDatabaseTokenHandler implements RePassTokenHandler
 {
-
-    public function createToken(string $hashKey) {
+    public function createToken(string $hashKey): string
+    {
+        // 64 hex chars: random value signed with the app key, as the framework does.
         return hash_hmac('sha256', Str::random(40), $hashKey);
     }
 
     public function tokenPayload($email, #[\SensitiveParameter] $token): array
     {
-        $hasher = app('hash');
-        return ['email' => $email, 'token' => $hasher->make($token), 'created_at' => new Carbon];
+        // Only the hash is stored: the plain token is shown to the user once, in the notification.
+        return ['email' => $email, 'token' => app('hash')->make($token), 'created_at' => now()];
     }
 
-    public function tokenExists(CanResetPassword $user, #[\SensitiveParameter] $token, #[\SensitiveParameter] $record): bool {
-        $hasher = app('hash');
-        return $hasher->check($token, $record['token']);
+    public function tokenExists(CanResetPassword $user, #[\SensitiveParameter] $token, #[\SensitiveParameter] array $record): bool
+    {
+        // Timing-safe comparison against the stored hash.
+        return app('hash')->check($token, $record['token']);
     }
 }
