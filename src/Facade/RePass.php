@@ -5,6 +5,8 @@ namespace Xraffsarr\LaravelRePass\Facade;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * Drop-in replacement for the Password facade, plus useTokenHandler() / getTokenHandler().
+ *
  * @method static \Illuminate\Contracts\Auth\PasswordBroker broker(string|null $name = null)
  * @method static string getDefaultDriver()
  * @method static void setDefaultDriver(string $name)

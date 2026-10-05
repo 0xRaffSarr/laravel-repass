@@ -6,6 +6,9 @@ use InvalidArgumentException;
 use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
 use Xraffsarr\LaravelRePass\Handler\RePassDatabaseTokenHandler;
 
+/**
+ * Holds the token handler shared by every broker. Registered as a singleton.
+ */
 class RePassManager
 {
     protected RePassTokenHandler $tokenHandler;
@@ -33,6 +36,9 @@ class RePassManager
         $this->tokenHandler = $handler;
     }
 
+    /**
+     * The active handler: the database one unless useTokenHandler() replaced it.
+     */
     public function getTokenHandler(): RePassTokenHandler
     {
         return $this->tokenHandler;

@@ -6,6 +6,9 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Support\Str;
 use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
 
+/**
+ * Default handler: mirrors the framework behaviour (hashed random token, no extra secrets).
+ */
 class RePassDatabaseTokenHandler implements RePassTokenHandler
 {
     public function createToken(string $hashKey): string

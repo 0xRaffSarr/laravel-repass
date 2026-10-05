@@ -8,6 +8,10 @@ use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Database\ConnectionInterface;
 use Xraffsarr\LaravelRePass\Contracts\HandlesTokenExpiration;
 
+/**
+ * Framework database token repository that delegates token creation, the stored payload and
+ * token verification to the active RePassTokenHandler.
+ */
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
     public function __construct(
@@ -22,16 +26,26 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
         parent::__construct($connection, $hasher, $table, $hashKey, $expires, $throttle);
     }
 
+    /**
+     * Build the row stored in the reset table, as defined by the handler.
+     */
     protected function getPayload($email, #[\SensitiveParameter] $token)
     {
         return $this->manager->getTokenHandler()->tokenPayload($email, $token);
     }
 
+    /**
+     * Generate the token through the handler (a string, or an array for multi-secret handlers).
+     */
     public function createNewToken()
     {
         return $this->manager->getTokenHandler()->createToken($this->hashKey);
     }
 
+    /**
+     * Same flow as the framework (record found, not expired, token matches), except that
+     * expiration and matching can be customised by the handler.
+     */
     public function exists(CanResetPasswordContract $user, #[\SensitiveParameter] $token)
     {
         $record = (array) $this->getTable()->where(
