@@ -6,6 +6,7 @@ use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseRepository;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Database\ConnectionInterface;
+use Xraffsarr\LaravelRePass\Contracts\HandlesTokenExpiration;
 
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
@@ -37,9 +38,17 @@ class DatabaseTokenRepository extends BaseDatabaseRepository
             'email', $user->getEmailForPasswordReset()
         )->first();
 
-        return $record &&
-            ! $this->tokenExpired($record['created_at']) &&
-            $this->manager->getTokenHandler()->tokenExists($user, $token, $record);
+        if (! $record) {
+            return false;
+        }
+
+        $handler = $this->manager->getTokenHandler();
+
+        $expired = $handler instanceof HandlesTokenExpiration
+            ? $handler->tokenExpired($user, $token, $record, $this->expires)
+            : $this->tokenExpired($record['created_at']);
+
+        return ! $expired && $handler->tokenExists($user, $token, $record);
     }
 
 }
