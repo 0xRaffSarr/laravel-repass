@@ -2,44 +2,39 @@
 
 namespace Xraffsarr\LaravelRePass;
 
+use InvalidArgumentException;
 use Xraffsarr\LaravelRePass\Contracts\RePassTokenHandler;
 use Xraffsarr\LaravelRePass\Handler\RePassDatabaseTokenHandler;
 
 class RePassManager
 {
-    protected $app;
-    protected RePassTokenHandler  $tokenHandler;
+    protected RePassTokenHandler $tokenHandler;
 
-    public function __construct($app) {
-        $this->app = $app;
+    public function __construct(protected $app)
+    {
         $this->tokenHandler = new RePassDatabaseTokenHandler();
     }
 
-
     /**
-     * @param RePassTokenHandler|string $handler
-     * @return void
+     * @param  RePassTokenHandler|class-string<RePassTokenHandler>  $handler  class names are resolved from the container
      *
-     * @author Raffaele Sarracino
-     * @version 1.0.0
+     * @throws InvalidArgumentException when the handler does not implement RePassTokenHandler
      */
     public function useTokenHandler(RePassTokenHandler|string $handler): void
     {
-        if(is_string($handler) && in_array(RePassTokenHandler::class, class_implements($handler))) {
-            $this->tokenHandler = new $handler();
+        if (is_string($handler)) {
+            if (! is_a($handler, RePassTokenHandler::class, true)) {
+                throw new InvalidArgumentException("[{$handler}] must implement ".RePassTokenHandler::class.'.');
+            }
+
+            $handler = $this->app->make($handler);
         }
-        else if($handler instanceof RePassTokenHandler) {
-            $this->tokenHandler = $handler;
-        }
+
+        $this->tokenHandler = $handler;
     }
 
-    /**
-     * @return RePassTokenHandler
-     *
-     * @author Raffaele Sarracino
-     * @version 1.0.0
-     */
-    public function getTokenHandler(): RePassTokenHandler {
+    public function getTokenHandler(): RePassTokenHandler
+    {
         return $this->tokenHandler;
     }
 }

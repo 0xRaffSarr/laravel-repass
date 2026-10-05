@@ -6,21 +6,19 @@ use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseRepository;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Database\ConnectionInterface;
+
 class DatabaseTokenRepository extends BaseDatabaseRepository
 {
-    protected RePassManager $manager;
-
     public function __construct(
         ConnectionInterface $connection,
         HasherContract $hasher,
         $table,
         $hashKey,
-        RePassManager $manager,
+        protected RePassManager $manager,
         $expires = 3600,
         $throttle = 60,
     ) {
         parent::__construct($connection, $hasher, $table, $hashKey, $expires, $throttle);
-        $this->manager = $manager;
     }
 
     protected function getPayload($email, #[\SensitiveParameter] $token)
